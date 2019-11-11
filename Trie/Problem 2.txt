@@ -1,0 +1,100 @@
+package Leetcode;
+import java.util.*;
+
+// this is basically the functionality of auto complete using trie data structure
+//at each TrieNode we are storing prefix means the prefix word which we have till this point.
+// although this approach is not good because it will increase the space complexity
+public class Trie1 {
+
+    class TrieNode1{
+        String prefix;
+         boolean endOfWord;
+        Map<Character,TrieNode1> children;
+        public TrieNode1(String prefix) {
+            this.prefix = prefix;
+            children = new HashMap<>();
+            endOfWord = false;
+        }
+    }
+    
+    TrieNode1 root;
+    
+    public Trie1() {
+        root = new TrieNode1("");
+    }
+    
+    public void insert(String word) {
+        TrieNode1 current = root;
+        for(int i=0;i<word.length();i++) {
+            if(!current.children.containsKey(word.charAt(i))) {
+                current.children.put(word.charAt(i), new TrieNode1(word.substring(0,i+1)));
+            }
+            current = current.children.get(word.charAt(i));
+        }
+        current.endOfWord = true;
+    }
+    
+    public boolean search(String word) {
+        TrieNode1 current = root;
+        char[] chars = word.toCharArray();
+        for(char ch:chars) {
+            if(!current.children.containsKey(ch)) {
+                return false;
+            }
+            current = current.children.get(ch);
+        }
+        return current.endOfWord;
+    }
+    
+    
+    public List<String> autoComplete(String pre){
+        List<String> list = new ArrayList<>();
+        TrieNode1 current = root;
+        
+        for(int i=0;i<pre.length();i++) {
+            if(!current.children.containsKey(pre.charAt(i))) {
+                return list;
+            }
+            current = current.children.get(pre.charAt(i));
+        }
+        
+        autoCompleteUtil(current,list);
+        return list;
+    }
+    
+    public void autoCompleteUtil(TrieNode1 current, List<String> result) {
+        if(current.endOfWord) {
+            result.add(current.prefix);
+        }
+        for(Character ch : current.children.keySet()) {
+            autoCompleteUtil(current.children.get(ch), result);
+        }
+    } 
+    
+    public static void main(String[] args) {
+        Trie1 trie = new Trie1();
+        trie.insert("apple");
+        trie.insert("a");
+        trie.insert("ant");
+        trie.insert("abc");
+        trie.insert("bcd");
+        trie.insert("bad");
+        System.out.println(trie.autoComplete("a"));
+        System.out.println(trie.autoComplete("b"));
+    }
+    
+    
+    //complete this to see the overall result
+    //pictorial representation of the trie formed
+    
+    //            "",{a,b},false
+    //               /          \
+    //            /            \
+    //         "a",{p},false   "b",{c},false 
+    //          /                 \
+    //         /                  \
+    //      "ap",{p},false       "bc",{d},false
+    //         /                        \    
+    //      /                         \
+    //   "app",{},true              "bcd",{},true
+}

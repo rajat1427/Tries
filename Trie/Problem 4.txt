@@ -1,0 +1,71 @@
+package Leetcode;
+import java.util.*;
+
+//https://leetcode.com/problems/add-and-search-word-data-structure-design/
+
+public class WordDictionary {
+
+    class TrieNode{
+         boolean endOfWord;
+        Map<Character,TrieNode> children;
+        public TrieNode() {
+            children = new HashMap<>();
+            endOfWord = false;
+        }
+    }
+    
+    TrieNode root;
+    
+    public WordDictionary() {
+        root = new TrieNode();
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        TrieNode current = root;
+        char[] chars = word.toCharArray();
+        for(char ch:chars) {
+            if(!current.children.containsKey(ch)) {
+                TrieNode newNode = new TrieNode();
+                current.children.put(ch,newNode);
+            }
+            current = current.children.get(ch);
+        }
+        current.endOfWord = true;
+    }
+    
+    public boolean search(String word) {
+        return searchHelper(root,word);
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean searchHelper(TrieNode root,String word) {
+        TrieNode current = root;
+        for(int i=0;i<word.length();i++){
+            if(word.charAt(i)=='.'){
+                for(TrieNode node:current.children.values()){
+                     if(searchHelper(node,word.substring(i+1)))
+                            return true;
+                }
+                return false;               
+            }
+            else{
+                if(!current.children.containsKey(word.charAt(i)))
+                    return false;
+                else
+                    current = current.children.get(word.charAt(i));
+            }
+        }
+        
+        return current.endOfWord;
+        
+      }
+    
+    public static void main(String[] args) {
+        WordDictionary dict = new WordDictionary();
+        dict.addWord("cat");
+        dict.addWord("can");
+        System.out.println(dict.search(".a."));
+    }
+
+}
