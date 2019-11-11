@@ -1,0 +1,61 @@
+/*https://www.interviewbit.com/problems/shortest-unique-prefix/*/
+
+public class Solution {
+    public ArrayList<String> prefix(ArrayList<String> a) {
+        
+        TrieNode root = new TrieNode();
+        
+        for(String s:a){
+            insert(root,s);
+        }
+        
+        ArrayList<String> prefixes = new ArrayList<>();
+        for (String s : a) {
+            prefixes.add(findPrefix(root, s));
+        }
+        
+        return prefixes;
+    }
+    
+    
+    void insert(TrieNode root,String a){
+        TrieNode current=root;
+        for(int i=0;i<a.length();i++){
+            if(current.children.containsKey(a.charAt(i))){
+                current=current.children.get(a.charAt(i));
+                current.count++;
+            }
+            else{
+                TrieNode node =new TrieNode();
+                current.children.put(a.charAt(i),node);
+                current=node;
+            }
+        }
+      }
+      
+      String findPrefix(TrieNode root,String a){
+          TrieNode current = root;
+          char[] chars=a.toCharArray();
+          
+          StringBuilder prefix=new StringBuilder();
+          
+          int i=0;
+          while(true){
+              char ch = chars[i++];
+              prefix.append(ch);
+              current=current.children.get(ch);
+              if(current.count==1)
+              return prefix.toString();
+          }
+      }
+      
+     public class TrieNode{
+            int count;
+            HashMap<Character,TrieNode> children = new HashMap<>();
+            
+            TrieNode(){
+                count=1;
+            }
+        }
+}
+
